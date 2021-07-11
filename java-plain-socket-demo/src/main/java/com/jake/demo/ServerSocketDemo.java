@@ -58,14 +58,15 @@ public class ServerSocketDemo {
 
                 printer.printf("Hello, what's your name? %n", socket.getInetAddress().toString());
                 name = reader.readLine();
-                System.out.printf("%s connected. %n", name);
                 sockets.add(socket);
 
+                System.out.printf("%s connected. %n", name);
                 pushMessage(String.format("%s connected. %n", name));
                 String message;
                 while ((message = reader.readLine()) != null) {
                     if (message.equals("/close")) {
                         System.out.printf("%s disconnected. %n", name);
+                        pushMessage(String.format("%s disconnected. %n", name));
                         socket.close();
                         break;
                     }

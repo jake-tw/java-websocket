@@ -13,8 +13,8 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>java-plain-socket-demo</module>
         <module>spring-boot-websocket-demo</module>
-        <module>java-socket-demo</module>
     </modules>
 
 </project>
