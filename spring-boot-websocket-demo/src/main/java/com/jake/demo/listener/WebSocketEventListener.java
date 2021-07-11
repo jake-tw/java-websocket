@@ -1,4 +1,4 @@
-package com.jake.demo.event;
+package com.jake.demo.listener;
 
 import java.time.LocalDateTime;
 
@@ -36,6 +36,6 @@ public class WebSocketEventListener {
                 .type(MessageType.DISCONNECT).build();
 
         simpMessageSendingOperations.convertAndSend("/topic/chat", message);
-        log.info("User disconnected.");
+        log.info("User {} disconnected.", username);
     }
 }

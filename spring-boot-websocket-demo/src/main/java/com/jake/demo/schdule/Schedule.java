@@ -18,7 +18,7 @@ public class Schedule {
 
     private Random random = new Random();
 
-    @Scheduled(cron = "0/5 * * * * *")
+    @Scheduled(cron = "0 * * * * *")
     public void mockQuotation() {
         LocalDateTime now = LocalDateTime.now();
 
@@ -27,6 +27,5 @@ public class Schedule {
 
         Quotation q2 = Quotation.builder().symbol("BBB").price(20 + random.nextInt(10)).time(now).build();
         simpMessageSendingOperations.convertAndSend("/topic/quotation", q2);
-
     }
 }
