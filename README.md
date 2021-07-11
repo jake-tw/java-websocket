@@ -80,24 +80,29 @@
 
                 - Client side: 訂閱時加上 prefix 如 /{prefix}/topic/transfer，自動轉換為訂閱 /topic/transfer{uniqueId}
 
-        - SimpMessageSendingOperations: 可 Autowired 此 Interface 主動向使用者推送 Message
+    - SimpMessageSendingOperations: 可 Autowired 此 Interface 主動向使用者推送 Message
 
-            ```java
-            simpMessageSendingOperations.convertAndSend(destination, payload);
-            simpMessageSendingOperations.convertAndSendToUser(user, destination, payload);
-            ```
+        ```java
+        simpMessageSendingOperations.convertAndSend(destination, payload);
+        simpMessageSendingOperations.convertAndSendToUser(user, destination, payload);
+        ```
 
-        - EventListener: 標註 @EventListener 的方法可用來處理特定 Event
+    - EventListener: 標註 @EventListener 的方法可用來處理特定 Event
 
-            ```java
-            @EventListener
-            public void handleConnectEventListener(SessionConnectEvent event) {
-                ...
-            }
+        ```java
+        @EventListener
+        public void handleConnectEventListener(SessionConnectEvent event) {
+            ...
+        }
 
-            @EventListener
-            public void handleDisconnectEventListener(SessionDisconnectEvent event) {
-                ...
-            }
-            ```
+        @EventListener
+        public void handleDisconnectEventListener(SessionDisconnectEvent event) {
+            ...
+        }
+        ```
 
+    - Principal
+
+        - HandshakeInterceptor: 可以在 beforeHandshake 進行身分認證，回傳 boolean 同意或拒絕握手
+
+        - DefaultHandshakeHandler: Override determineUser 回傳定義好的 Principal，此 Principal 可以在 Controller 的方法中做為參數自動傳遞
