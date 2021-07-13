@@ -9,14 +9,16 @@
 </head>
 
 <body>
-    <button id="connect">connect</button>
+    <button id="connect">Connect</button>
+    <button id="disconnect">Disconnect</button>
     
     <br>
     <br>
     <br>
 
     <div>
-        <button id="json-submit">json submit</button>
+        <button id="chat-submit">Chat submit</button>
+        <div id="chat-content"></div>
     </div>
 
     <br>
@@ -24,7 +26,8 @@
     <br>
 
     <div>
-        <button id="text-submit">text submit</button>
+        <button id="echo-submit">Echo submit</button>
+        <div id="echo-content"></div>
     </div>
 
     <br>
@@ -32,7 +35,17 @@
     <br>
 
     <div>
-        <button id="topic-submit">topic broadcast submit</button>
+        <button id="topic-broadcast">Topic broadcast</button>
+        <div id="broadcast-content"></div>
+    </div>
+    
+    <br>
+    <br>
+    <br>
+
+    <div>
+        Quotation: 
+        <div id="quotation-content"></div>
     </div>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.5.1/sockjs.min.js"></script>

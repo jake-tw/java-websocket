@@ -18,7 +18,7 @@ public class Schedule {
 
     private Random random = new Random();
 
-    @Scheduled(cron = "0 * * * * *")
+    @Scheduled(cron = "0/5 * * * * *")
     public void mockQuotation() {
         LocalDateTime now = LocalDateTime.now();
 
