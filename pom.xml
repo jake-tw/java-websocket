@@ -14,6 +14,7 @@
 
     <modules>
         <module>java-plain-socket-demo</module>
+        <module>spring-boot-rsocket-demo</module>
         <module>spring-boot-websocket-demo</module>
     </modules>
 

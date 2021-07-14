@@ -106,3 +106,71 @@
         - HandshakeInterceptor: 可以在 beforeHandshake 進行身分認證，回傳 boolean 同意或拒絕握手
 
         - DefaultHandshakeHandler: Override determineUser 回傳定義好的 Principal，此 Principal 可以在 Controller 的方法中做為參數自動傳遞
+
+<br>
+
+- Spring Boot RSocket
+
+    - TCP Connection
+
+        - Properties: 此處的 port 是指 RSocket Server 的 port，若是同時使用 Spring WebFlux 則會有兩個 port，一個 Web Server，一個 RSocket Server
+
+            ```txt
+            server.port=9000
+            spring.rsocket.server.port=7000
+            ```
+
+        - Requester Example
+
+            ```java
+            RSocketStrategies strategies = RSocketStrategies.builder()
+                .encoders(encoders -> encoders.add(new Jackson2CborEncoder()))
+                .decoders(decoders -> decoders.add(new Jackson2CborDecoder()))
+                .build();
+
+            RSocketRequester requester = RSocketRequester.builder().rsocketStrategies(strategies).tcp("127.0.0.1", 7000);
+            ```
+
+    - WebSocket Connection
+
+        - Properties: 若透過 Web Server 握手則需要指定 path，如 http://127.0.0.1:{server.port}/rsocket 或 ws://127.0.0.1:{server.port}/rsocket，也可以直接透過 RSocket Server 的 port 進行連線
+
+            ```txt
+            spring.rsocket.server.mapping-path=/rsocket
+            spring.rsocket.server.transport=websocket
+            ```
+
+        - Requester Example
+
+            ```java
+            RSocketStrategies strategies = RSocketStrategies.builder()
+                .encoders(encoders -> encoders.add(new Jackson2CborEncoder()))
+                .decoders(decoders -> decoders.add(new Jackson2CborDecoder()))
+                .build();
+
+            URI url = URI.create("http://127.0.0.1:" + {server.port} + "/rsocket");
+            RSocketRequester requester = RSocketRequester.builder().rsocketStrategies(strategies).websocket(url);
+            ```
+
+    - Heart beat
+
+        1. 在 Client 新增處理 Server 請求的方法
+
+            ```java
+            @MessageMapping("client-status")
+            public Flux<String> statusUpdate(String status) {
+                log.info("Connection {}", status);
+                return Flux.interval(Duration.ofSeconds(5))
+                           .map(index -> String.valueOf(Runtime.getRuntime().freeMemory()));
+            }
+            ```
+
+        2. 透過 Server 發送請求
+
+            ```java
+            requester.route("client-status")
+                     .data("OPEN")
+                     .retrieveFlux(String.class)
+                     .doOnNext(s -> log.info("Client: {} Free Memory: {}.", client, s))
+                     .subscribe();
+            ```
