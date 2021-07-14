@@ -180,20 +180,34 @@
             RSocketRequester requester = RSocketRequester.builder().rsocketStrategies(strategies).websocket(url);
             ```
 
-    - Heart beat
+    - 透過 Responder 回應 Server 的 Request
 
-        1. 在 Client 新增處理 Server 請求的方法
+        1. 在 Client 新增處理 Server 請求方法的 Handler
 
             ```java
-            @MessageMapping("client-status")
-            public Flux<String> statusUpdate(String status) {
-                log.info("Connection {}", status);
-                return Flux.interval(Duration.ofSeconds(5))
-                           .map(index -> String.valueOf(Runtime.getRuntime().freeMemory()));
+            class ClientHandler {
+                @MessageMapping("client-status")
+                public Flux<String> statusUpdate(String status) {
+                    log.info("Connection {}", status);
+                    return Flux.interval(Duration.ofSeconds(5)).map(index -> String.valueOf(Runtime.getRuntime().freeMemory()));
+                }
             }
             ```
 
-        2. 透過 Server 發送請求
+        2. 使用 Handler 建立 Responder，並加入 RsocketConnector
+
+            ```java
+            SocketAcceptor responder = RSocketMessageHandler.responder(strategies, new ClientHandler());
+
+            requester = RSocketRequester.builder()
+                .setupRoute("shell-client")
+                .setupData(client)
+                .rsocketStrategies(strategies)
+                .rsocketConnector(connector -> connector.acceptor(responder))
+                .tcp("127.0.0.1", port);
+            ```
+
+        3. Server 發送請求
 
             ```java
             requester.route("client-status")

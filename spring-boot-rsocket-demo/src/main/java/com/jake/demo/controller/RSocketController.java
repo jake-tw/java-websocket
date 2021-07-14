@@ -53,11 +53,11 @@ public class RSocketController {
         }).subscribe();
 
         // Send request-stream to get client's heart beat
-        // requester.route("client-status")
-        //          .data("OPEN")
-        //          .retrieveFlux(String.class)
-        //          .doOnNext(s -> log.info("Client: {} Free Memory: {}.", client, s))
-        //          .subscribe();
+         requester.route("client-status")
+                  .data("OPEN")
+                  .retrieveFlux(String.class)
+                  .doOnNext(s -> log.info("Client: {} Free Memory: {}.", client, s))
+                  .subscribe();
     }
 
     @MessageMapping("request-response")

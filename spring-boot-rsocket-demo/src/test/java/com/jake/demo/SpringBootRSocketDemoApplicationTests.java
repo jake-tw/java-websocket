@@ -12,12 +12,15 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.codec.cbor.Jackson2CborDecoder;
 import org.springframework.http.codec.cbor.Jackson2CborEncoder;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
+import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
 import com.jake.demo.controller.RSocketController;
 import com.jake.demo.model.Message;
 
+import io.rsocket.SocketAcceptor;
 import lombok.extern.slf4j.Slf4j;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -37,16 +40,28 @@ class SpringBootRSocketDemoApplicationTests {
                 .build();
 
         String client = UUID.randomUUID().toString();
+
+        SocketAcceptor responder = RSocketMessageHandler.responder(strategies, new ClientHandler());
         
         requester = RSocketRequester.builder()
                 .setupRoute("shell-client")
                 .setupData(client)
-                .rsocketStrategies(strategies).tcp("127.0.0.1", port);
+                .rsocketStrategies(strategies)
+                .rsocketConnector(connector -> connector.acceptor(responder))
+                .tcp("127.0.0.1", port);
     }
 
     @AfterAll
     public static void tearDownOnce() {
         requester.dispose();
+    }
+
+    private static class ClientHandler {
+        @MessageMapping("client-status")
+        public Flux<String> statusUpdate(String status) {
+            log.info("Connection {}", status);
+            return Flux.interval(Duration.ofSeconds(5)).map(index -> String.valueOf(Runtime.getRuntime().freeMemory()));
+        }
     }
 
     @Test
