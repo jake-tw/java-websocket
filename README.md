@@ -6,8 +6,24 @@
 - Java Plain Socket
 
     - Server
+    
+        - TCP: ServerSocket
+
+        - UDP: DatagramSocket
 
     - Client
+
+        - TCP: Socket
+
+        - UDP: DatagramPacket
+
+    - NIO
+
+        - TCP: ServerSocketChannel
+
+        - UDP: DatagramChannel
+
+<br>
 
 - Spring Boot WebSocket
 
@@ -107,6 +123,18 @@
 
         - DefaultHandshakeHandler: Override determineUser 回傳定義好的 Principal，此 Principal 可以在 Controller 的方法中做為參數自動傳遞
 
+    - Annotation
+
+        - @Controller: 表示處理 Message 的 Class
+
+        - @MessageMapping: 接收 Message 的 Destination
+
+        - @SendTo: 推送 Message 到指定 Topic
+
+        - @SendToUser: 推送 Message 到指定 Topic，可選擇是否只推送給特定 User
+
+        - @Payload: 表示該參數為 Body 的資料
+
 <br>
 
 - Spring Boot RSocket
@@ -174,3 +202,11 @@
                      .doOnNext(s -> log.info("Client: {} Free Memory: {}.", client, s))
                      .subscribe();
             ```
+
+    - Annotation:
+
+        - @Controller: 表示為處理 Message 的 Class
+
+        - @ConnectMapping: 接收 SETUP 類型的請求，必須回傳 Void，可以與 @MessageMapping 組合使用
+
+        - @MessageMapping: 接收請求，依照傳入與回傳的參數區分 4 種 RSocket 的操作類型
