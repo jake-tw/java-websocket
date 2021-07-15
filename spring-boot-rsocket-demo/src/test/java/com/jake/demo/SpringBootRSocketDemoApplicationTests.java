@@ -2,16 +2,16 @@ package com.jake.demo;
 
 import java.time.Duration;
 import java.util.UUID;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.rsocket.context.LocalRSocketServerPort;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.codec.cbor.Jackson2CborDecoder;
-import org.springframework.http.codec.cbor.Jackson2CborEncoder;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
@@ -33,26 +33,24 @@ class SpringBootRSocketDemoApplicationTests {
     private static RSocketRequester requester;
 
     @BeforeAll
-    public static void setupOnce(@Value("${spring.rsocket.server.port}") Integer port) {
-        RSocketStrategies strategies = RSocketStrategies.builder()
-                .encoders(encoders -> encoders.add(new Jackson2CborEncoder()))
-                .decoders(decoders -> decoders.add(new Jackson2CborDecoder()))
-                .build();
-
-        String client = UUID.randomUUID().toString();
-
-        SocketAcceptor responder = RSocketMessageHandler.responder(strategies, new ClientHandler());
+    public static void setupOnce(
+            @LocalRSocketServerPort Integer port,
+            @Autowired RSocketRequester.Builder builder, 
+            @Autowired RSocketStrategies strategies) {
         
-        requester = RSocketRequester.builder()
+        SocketAcceptor responder = RSocketMessageHandler.responder(strategies, new ClientHandler());
+
+        requester = builder
                 .setupRoute("shell-client")
-                .setupData(client)
-                .rsocketStrategies(strategies)
+                .setupData(UUID.randomUUID().toString())
                 .rsocketConnector(connector -> connector.acceptor(responder))
                 .tcp("127.0.0.1", port);
     }
 
     @AfterAll
-    public static void tearDownOnce() {
+    public static void tearDownOnce() throws InterruptedException {
+        // make sure to print the server's log before dispose
+        TimeUnit.SECONDS.sleep(1);
         requester.dispose();
     }
 
