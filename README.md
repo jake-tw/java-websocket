@@ -6,23 +6,25 @@
 
 #### Java Plain Socket
 
-- Server
+- Related Class
 
-    - TCP: ServerSocket
+    - Server
 
-    - UDP: DatagramSocket
+        - TCP: ServerSocket
 
-- Client
+        - UDP: DatagramSocket
 
-    - TCP: Socket
+    - Client
 
-    - UDP: DatagramPacket
+        - TCP: Socket
 
-- NIO
+        - UDP: DatagramPacket
 
-    - TCP: ServerSocketChannel
+    - NIO
 
-    - UDP: DatagramChannel
+        - TCP: ServerSocketChannel
+
+        - UDP: DatagramChannel
 
 <br>
 
@@ -64,7 +66,7 @@
         @Override
         public void registerStompEndpoints(StompEndpointRegistry registry) {
             registry.addEndpoint("/socket"); // receive ws://
-            registry.addEndpoint("/socket").withSockJS(); // receive htt://
+            registry.addEndpoint("/socket").withSockJS(); // receive http://
         }
         ```
 
